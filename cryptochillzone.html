@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CryptoChillZone - Oyna, Kazan, Rahatla!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        body {
+            background: #1A1A3D;
+            color: #e0e0e0;
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        canvas#chainBg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.4;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(0, 0, 0, 0.8);
+            box-shadow: 0 0 25px rgba(107, 72, 255, 0.8);
+            animation: neonPulse 2s ease-in-out infinite;
+        }
+
+        header h1 {
+            font-size: 3.5em;
+            background: linear-gradient(45deg, #FFD700, #00DDEB);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(0, 221, 235, 0.9);
+        }
+
+        header p {
+            font-size: 1.2em;
+            max-width: 700px;
+            margin: 15px auto;
+        }
+
+        .auth-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .auth-form {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 221, 235, 0.6);
+            width: 300px;
+            text-align: center;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .auth-form:hover {
+            box-shadow: 0 0 20px rgba(0, 221, 235, 0.8);
+        }
+
+        .auth-form h3 {
+            color: #FFD700;
+            margin-bottom: 15px;
+        }
+
+        .auth-form input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            background: rgba(0, 0, 0, 0.5);
+            color: #e0e0e0;
+            box-shadow: inset 0 0 5px rgba(0, 221, 235, 0.4);
+        }
+
+        .auth-form button {
+            padding: 10px 20px;
+            background: #00DDEB;
+            color: #1a1a3d;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s ease;
+        }
+
+        .auth-form button:hover {
+            transform: scale(1.1);
+        }
+
+        .auth-form button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s ease, height 0.4s ease;
+        }
+
+        .auth-form button:hover::after {
+            width: 200px;
+            height: 200px;
+        }
+
+        .register-link {
+            margin-top: 10px;
+            color: #FFD700;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .register-link:hover {
+            color: #00DDEB;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #2A2A3D;
+            color: #e0e0e0;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 650px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 0 25px rgba(107, 72, 255, 0.9);
+            animation: hologram 1s ease-in;
+        }
+
+        .modal-content h2 {
+            font-size: 1.8em;
+            color: #FFD700;
+            margin-bottom: 20px;
+        }
+
+        .modal-content ul {
+            list-style-type: decimal;
+            padding-left: 20px;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            background: rgba(0, 0, 0, 0.5);
+            color: #e0e0e0;
+            box-shadow: inset 0 0 5px rgba(0, 221, 235, 0.4);
+        }
+
+        .modal-content button {
+            padding: 10px 20px;
+            background: #00DDEB;
+            color: #1a1a3d;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s ease;
+        }
+
+        .modal-content button:hover {
+            transform: scale(1.1);
+        }
+
+        .modal-content button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s ease, height 0.4s ease;
+        }
+
+        .modal-content button:hover::after {
+            width: 200px;
+            height: 200px;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.8em;
+            color: #00DDEB;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: #FFD700;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(107, 72, 255, 0.4);
+            border-radius: 15px;
+            margin: 20px 0;
+            animation: hologram 1.5s ease-in;
+            box-shadow: 0 0 25px rgba(107, 72, 255, 0.6);
+        }
+
+        .hero h2 {
+            font-size: 2.5em;
+            color: #FFD700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+        }
+
+        .section {
+            margin: 50px 0;
+            animation: slideUp 1s ease-in;
+        }
+
+        .section h2 {
+            font-size: 2.2em;
+            text-align: center;
+            color: #00DDEB;
+            text-shadow: 0 0 5px rgba(0, 221, 235, 0.7);
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 221, 235, 0.5);
+            perspective: 1000px;
+        }
+
+        .card:hover {
+            transform: rotateY(15deg) translateY(-10px);
+            box-shadow: 0 10px 30px rgba(107, 72, 255, 0.9);
+        }
+
+        .card h3 {
+            font-size: 1.6em;
+            color: #FFD700;
+            margin-bottom: 10px;
+        }
+
+        .donation-box {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            margin: 40px 0;
+            animation: chainPulse 2s infinite;
+            box-shadow: 0 0 25px rgba(0, 221, 235, 0.6);
+        }
+
+        .donation-box h2 {
+            color: #00DDEB;
+            margin-bottom: 15px;
+        }
+
+        .donation-box input {
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            width: 120px;
+            margin: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            color: #e0e0e0;
+            box-shadow: inset 0 0 5px rgba(0, 221, 235, 0.4);
+        }
+
+        .donation-box button {
+            padding: 12px 25px;
+            background: #FFD700;
+            color: #1a1a3d;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s ease;
+        }
+
+        .donation-box button:hover {
+            transform: scale(1.1);
+        }
+
+        .donation-box button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s ease, height 0.4s ease;
+        }
+
+        .donation-box button:hover::after {
+            width: 200px;
+            height: 200px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            margin-top: 40px;
+            font-size: 0.9em;
+        }
+
+        @keyframes neonPulse {
+            0% { box-shadow: 0 0 10px rgba(107, 72, 255, 0.5); }
+            50% { box-shadow: 0 0 25px rgba(107, 72, 255, 0.9); }
+            100% { box-shadow: 0 0 10px rgba(107, 72, 255, 0.5); }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes hologram {
+            0% { transform: scale(0.8); opacity: 0; filter: blur(5px); }
+            50% { transform: scale(1.05); opacity: 1; filter: blur(0); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes chainPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+
+        @media (max-width: 768px) {
+            header h1 { font-size: 2.5em; }
+            .hero h2 { font-size: 2em; }
+            .card-grid { grid-template-columns: 1fr; }
+            .auth-form { width: 100%; max-width: 300px; }
+            .modal-content { max-width: 90%; }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <canvas id="chainBg"></canvas>
+    <header>
+        <h1>CryptoChillZone</h1>
+        <p>ChillSquad’a hoş geldin! Beceri oyunlarıyla CCZ kazan, piyasanın stresinden uzaklaş!</p>
+        <div class="auth-box">
+            <div class="auth-form" id="loginForm">
+                <h3>Giriş Yap</h3>
+                <input type="text" placeholder="Kullanıcı Adı" required>
+                <input type="password" placeholder="Şifre" required>
+                <button onclick="alert('Giriş yapılıyor... (Backend entegrasyonu gerekli)')">Giriş Yap</button>
+                <div class="register-link" onclick="openRegisterModal()">Hesabın yok mu? Kaydol!</div>
+            </div>
+        </div>
+    </header>
+
+    <div class="modal" id="registerModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeRegisterModal()">×</span>
+            <h2>Kayıt Ol</h2>
+            <input type="text" placeholder="Kullanıcı Adı" required>
+            <input type="email" placeholder="E-posta" required>
+            <input type="password" placeholder="Şifre" required>
+            <button onclick="alert('Kayıt yapılıyor... E-posta doğrulaması gönderildi! (Backend entegrasyonu gerekli)')">Kayıt Ol</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="hero">
+            <h2>Rahatla, Oyna, CCZ Kazan!</h2>
+            <p>Piyasanın kırmızılarından bunaldın mı? CryptoChillZone’da bilgi yarışmaları ve strateji oyunlarıyla eğlen, CCZ token’ları kap! Burası kumarhane değil, ChillSquad’ın dinlenme odası!</p>
+        </div>
+
+        <div class="section">
+            <h2>Biz Kimiz?</h2>
+            <p>CryptoChillZone, blockchain destekli, beceri tabanlı oyunlar sunan bir eğlence platformu. Rug-pull yok, manipülasyon yok, sadece iyi vibe ve CCZ ödülleri!</p>
+        </div>
+
+        <div class="section">
+            <h2>Projemiz Ne?</h2>
+            <p>Beceri tabanlı web oyunlarıyla (bilgi yarışmaları, strateji bulmacaları) CCZ kazanabileceğin bir ekosistem. Piyasanın sıkıcı anlarında kafa dağıtmak için buradayız.</p>
+        </div>
+
+        <div class="section">
+            <h2>Neden Blockchain?</h2>
+            <p>Blockchain ile işlemler güvenli, şeffaf ve ucuz. CCZ ödüllerin ve transferlerin hızlı, sorunsuz, geleneksel finansın dramalarından uzak.</p>
+        </div>
+
+        <div class="section">
+            <h2>Büyük Planlarımız</h2>
+            <div class="card-grid">
+                <div class="card">
+                    <h3>ChillSquad’ı Büyüt</h3>
+                    <p>Eğlenirken CCZ kazanan küresel bir topluluk yarat.</p>
+                </div>
+                <div class="card">
+                    <h3>Erken Erişim Partisi</h3>
+                    <p>CCZ token’larını kap, yakında başlayacak airdrop etkinliklerine hazır ol!</p>
+                </div>
+                <div class="card">
+                    <h3>Borsalarda Parla</h3>
+                    <p>CCZ’yi gelecekte büyük borsalarda listelet, herkese ulaş.</p>
+                </div>
+                <div class="card">
+                    <h3>Yüksek Ücretlere Elveda</h3>
+                    <p>Düşük maliyetli transferlerle aracıları devre dışı bırak.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>CCZ Token & Erken Erişim</h2>
+            <p>CCZ token’lar erken erişimde! 1 CCZ = 1 USD. Oyunlarla CCZ kazan veya yakında başlayacak airdrop’lara katıl. Token’lar ödüller ve transferler için kullanılır.</p>
+        </div>
+
+        <div class="section">
+            <h2>Neden Biz?</h2>
+            <p>Basit bir token projesi değiliz. CryptoChillZone, piyasanın stresinden kaçışın. Beceri tabanlı oyunlarımızla beynini ödüllendir, ChillSquad ile eğlen!</p>
+        </div>
+
+        <div class="donation-box">
+            <h2>ChillSquad’a Destek Ol!</h2>
+            <p>1 USDT bile olsa, desteğin bizim için altın değerinde! Tek seferde maksimum 10 USDT bağış yapabilirsin. Katkın için minnettarız!</p>
+            <input type="number" placeholder="USDT Miktarı" max="10" min="0.01">
+            <button>Bağış Yap & Rahatla</button>
+        </div>
+
+        <div class="section">
+            <h2><a href="#" onclick="openLegalModal()">Yasal Bilgiler (Tıkla, Oku)</a></h2>
+        </div>
+    </div>
+
+    <div class="modal" id="legalModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeLegalModal()">×</span>
+            <h2>Yasal Bilgiler (Rahat Ol, Her Şey Şeffaf)</h2>
+            <ul>
+                <li><strong>Yerel Yasalar:</strong> Platformu kullanırken ülkenizin yasalarına uymalısın. Sorumluluk sende!</li>
+                <li><strong>Vergiler:</strong> CCZ veya diğer kazançlarının vergisi senin sorumluluğunda.</li>
+                <li><strong>IP & VPN:</strong> Ödüllü oyunlar bazı bölgelerde kısıtlı. VPN kullanırsan, yasal sorumluluk senin.</li>
+                <li><strong>Beceri Oyunları:</strong> Oyunlarımız kumar değil, bilgi ve stratejiye dayalı. Ödüller becerine bağlı!</li>
+                <li><strong>KYC/AML:</strong> Ödemeler, kimlik doğrulama ve kara para aklama önleme kurallarına uyar.</li>
+                <li><strong>Veri Koruma:</strong> Verilerin GDPR ve diğer yasalarla korunuyor.</li>
+                <li><strong>Platform Sorumluluğu:</strong> Platformu kötüye kullanırsan, sorumluluk sende. Biz temiziz!</li>
+                <li><strong>Değişiklik Hakkı:</strong> Koşulları veya hizmetleri değiştirebiliriz, haber veririz.</li>
+            </ul>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2025 CryptoChillZone. ChillSquad için 💜 ile yapıldı.</p>
+    </footer>
+
+    <script>
+        // Canvas Blockchain Zinciri Animasyonu
+        const canvas = document.getElementById('chainBg');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const particles = [];
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 5 + 2;
+                this.speedX = Math.random() * 0.5 - 0.25;
+                this.speedY = Math.random() * 0.5 - 0.25;
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(0, 221, 235, 0.6)';
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(107, 72, 255, 0.4)';
+                ctx.stroke();
+            }
+        }
+
+        for (let i = 0; i < 50; i++) {
+            particles.push(new Particle());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+                for (let other of particles) {
+                    if (particle !== other) {
+                        const dx = particle.x - other.x;
+                        const dy = particle.y - other.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        if (distance < 100) {
+                            ctx.beginPath();
+                            ctx.moveTo(particle.x, particle.y);
+                            ctx.lineTo(other.x, other.y);
+                            ctx.strokeStyle = 'rgba(0, 221, 235, 0.3)';
+                            ctx.stroke();
+                        }
+                    }
+                }
+            });
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        function openRegisterModal() {
+            document.getElementById('registerModal').style.display = 'flex';
+        }
+
+        function closeRegisterModal() {
+            document.getElementById('registerModal').style.display = 'none';
+        }
+
+        function openLegalModal() {
+            document.getElementById('legalModal').style.display = 'flex';
+        }
+
+        function closeLegalModal() {
+            document.getElementById('legalModal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
